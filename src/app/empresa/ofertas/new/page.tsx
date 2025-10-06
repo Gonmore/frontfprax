@@ -31,7 +31,7 @@ import {
   DollarSign
 } from 'lucide-react';
 
-export default function EmpresaOfertasNewPage({ editId: propEditId }: { editId?: string } = {}) {
+export default function EmpresaOfertasNewPage() {
 	const router = useRouter();
 	const { user } = useAuthStore();
 		const [submitting, setSubmitting] = useState(false);
@@ -87,9 +87,9 @@ export default function EmpresaOfertasNewPage({ editId: propEditId }: { editId?:
 						}
 					}
 
-					// Usar prop editId si está disponible, sino detectar por URL
-					let id: number | null = propEditId ? Number(propEditId) : null;
-					if (!id && typeof window !== 'undefined') {
+					// Detectar ID de edición por URL (ya no usamos props)
+					let id: number | null = null;
+					if (typeof window !== 'undefined') {
 						const path = window.location.pathname;
 						const match = path.match(/\/empresa\/ofertas\/edit\/(\d+)/);
 						if (match) id = Number(match[1]);
@@ -137,7 +137,7 @@ export default function EmpresaOfertasNewPage({ editId: propEditId }: { editId?:
 								console.error('❌ Error cargando datos de oferta:', error);
 							});
 					}
-				}, [user, propEditId]);
+				}, [user]);
 
 			const handleSkillChange = (id: number) => {
 				setNewOffer(prev => {
