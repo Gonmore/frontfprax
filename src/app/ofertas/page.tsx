@@ -56,7 +56,7 @@ export default function OfertasPage() {
       if (user?.role === 'student' && token) {
         try {
           console.log('👨‍🎓 Fetching offers with aptitude for student...');
-          const response = await fetch('http://localhost:5000/api/offers/with-aptitude', {
+          const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/offers/with-aptitude`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -117,7 +117,7 @@ export default function OfertasPage() {
       try {
         console.log('🔄 Cargando aplicaciones del usuario...');
         
-        const response = await fetch('http://localhost:5000/api/applications/user', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/user`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -189,7 +189,7 @@ export default function OfertasPage() {
     setApplyingToOffer(offer.id.toString());
     
     try {
-      const response = await fetch('http://localhost:5000/api/applications', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -229,7 +229,7 @@ export default function OfertasPage() {
         
         // 🔥 RECARGAR APLICACIONES DEL USUARIO INMEDIATAMENTE PARA ASEGURAR CONSISTENCIA
         try {
-          const updatedApplicationsResponse = await fetch('http://localhost:5000/api/applications/user', {
+          const updatedApplicationsResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/user`, {
             headers: {
               'Authorization': `Bearer ${token}`,
               'Content-Type': 'application/json',
@@ -343,7 +343,7 @@ export default function OfertasPage() {
 
     setLoadingInterviewAction(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/confirm-interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/confirm-interview`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

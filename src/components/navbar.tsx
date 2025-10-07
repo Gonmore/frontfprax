@@ -18,7 +18,7 @@ function TokenDisplay() {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/students/tokens/balance', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/tokens/balance`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
