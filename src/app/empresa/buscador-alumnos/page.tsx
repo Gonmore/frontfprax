@@ -646,7 +646,7 @@ function CandidateSearchContent() {
       setLoadingRevealed(true);
       console.log('🔍 Cargando estudiantes con CVs revelados...');
       
-      const response = await fetch('http://localhost:5000/api/students/revealed-candidates', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/revealed-candidates`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
