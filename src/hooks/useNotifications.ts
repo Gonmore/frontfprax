@@ -57,9 +57,38 @@ export const useNotifications = () => {
 
     const attemptConnection = (useSecure: boolean) => {
       try {
-        const wsProtocol = useSecure ? 'wss:' : 'ws:';
-        // El backend está corriendo en localhost:5000
-        const wsUrl = `ws://localhost:5000/ws/notifications?token=${encodeURIComponent(token)}`;
+        // 🚀 LOGGING DETALLADO PARA DEBUGGING
+        console.log('🔍 WebSocket: Variables de entorno disponibles:');
+        console.log('  - NEXT_PUBLIC_WEBSOCKET_URL:', process.env.NEXT_PUBLIC_WEBSOCKET_URL);
+        console.log('  - NEXT_PUBLIC_API_URL:', process.env.NEXT_PUBLIC_API_URL);
+        console.log('  - NODE_ENV:', process.env.NODE_ENV);
+
+        // Usar la URL de WebSocket de las variables de entorno o construir dinámicamente
+        let wsBaseUrl: string;
+
+        if (process.env.NEXT_PUBLIC_WEBSOCKET_URL) {
+          // Usar URL de WebSocket específica si está definida
+          wsBaseUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+          console.log('🔌 WebSocket: Usando NEXT_PUBLIC_WEBSOCKET_URL específica:', wsBaseUrl);
+        } else if (process.env.NEXT_PUBLIC_API_URL) {
+          // Construir URL de WebSocket desde API_URL
+          const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+          if (apiUrl.startsWith('http://')) {
+            wsBaseUrl = apiUrl.replace('http://', 'ws://');
+          } else if (apiUrl.startsWith('https://')) {
+            wsBaseUrl = apiUrl.replace('https://', 'wss://');
+          } else {
+            // URL relativa o malformada, intentar con HTTPS por defecto
+            wsBaseUrl = `wss://${apiUrl}`;
+          }
+          console.log('🔌 WebSocket: Construyendo desde NEXT_PUBLIC_API_URL:', wsBaseUrl);
+        } else {
+          // Fallback para desarrollo local
+          wsBaseUrl = useSecure ? 'wss://localhost:5000' : 'ws://localhost:5000';
+          console.log('🔌 WebSocket: Usando fallback localhost:', wsBaseUrl);
+        }
+
+        const wsUrl = `${wsBaseUrl}/ws/notifications?token=${encodeURIComponent(token)}`;
         console.log(`🔌 Intentando conexión WebSocket a:`, wsUrl.replace(token, '[TOKEN]'));
 
         const ws = new WebSocket(wsUrl);
@@ -120,7 +149,7 @@ export const useNotifications = () => {
       }
     };
 
-    // Siempre intentar WS a localhost:5000
+    // Intentar conexión WebSocket usando configuración dinámica
     attemptConnection(false);
   }, [token, user]);
 

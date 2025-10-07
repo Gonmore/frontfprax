@@ -5,6 +5,17 @@ import { useAuthStore } from '@/stores/auth';
 // ⚠️ CAMBIAR LA URL BASE
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'; // ← Sin /api por defecto
 
+// 🚀 LOGGING DETALLADO PARA DEBUGGING DE URLS
+if (typeof window !== 'undefined') {
+  console.log('🔗 ===== CONFIGURACIÓN DE API =====');
+  console.log('🔗 API Base URL:', API_BASE_URL);
+  console.log('🔗 NEXT_PUBLIC_API_URL env:', process.env.NEXT_PUBLIC_API_URL);
+  console.log('🔗 NODE_ENV:', process.env.NODE_ENV);
+  console.log('🔗 Window location origin:', window.location.origin);
+  console.log('🔗 Window location hostname:', window.location.hostname);
+  console.log('🔗 =================================');
+}
+
 // Create axios instance
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -42,12 +53,17 @@ apiClient.interceptors.response.use(
     if (error.response?.status === 401 || error.response?.status === 403) {
       const errorMessage = error.response?.data?.mensaje || error.response?.data?.message;
       
-      // Si el mensaje indica token expirado o inválido
-      if (errorMessage?.includes('expirado') || 
-          errorMessage?.includes('expired') || 
-          errorMessage?.includes('invalid') ||
-          errorMessage?.includes('inválido') ||
-          error.response?.status === 401) {
+      // NO aplicar logout automático en rutas de autenticación (login/register)
+      const isAuthRoute = error.config?.url?.includes('/api/auth/login') || 
+                         error.config?.url?.includes('/api/auth/register');
+      
+      if (!isAuthRoute && (
+        errorMessage?.includes('expirado') || 
+        errorMessage?.includes('expired') || 
+        errorMessage?.includes('invalid') ||
+        errorMessage?.includes('inválido') ||
+        error.response?.status === 401
+      )) {
         
         console.log('🔥 Token expirado detectado, limpiando sesión...');
         
@@ -73,11 +89,11 @@ apiClient.interceptors.response.use(
 export const onboardingApi = {
   checkStatus: () => {
     console.log('🔍 Calling checkStatus');
-    return apiClient.get('/onboarding/status'); // ← Sin /api, igual que auth
+    return apiClient.get('/api/onboarding/status');
   },
-  getNextStep: () => apiClient.get('/onboarding/next-step'),
-  completeStep: (step: string) => apiClient.post('/onboarding/complete-step', { step }),
-  getRecommendedOffers: () => apiClient.get('/onboarding/recommended-offers'),
+  getNextStep: () => apiClient.get('/api/onboarding/next-step'),
+  completeStep: (step: string) => apiClient.post('/api/onboarding/complete-step', { step }),
+  getRecommendedOffers: () => apiClient.get('/api/onboarding/recommended-offers'),
 };
 
 export const authApi = {
