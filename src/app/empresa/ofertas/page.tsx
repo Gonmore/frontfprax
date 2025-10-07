@@ -415,7 +415,10 @@ function CompanyOffersContent() {
     setBetterCandidatesModal(true);
 
     try {
-      // Buscar mejores candidatos usando el algoritmo
+      // 🔥 CORRECCIÓN: Enviar offerId para que el backend cargue profamilys y calcule correctamente la afinidad
+      console.log('🚀 Buscando candidatos para oferta:', offer.id, offer.name);
+      console.log('🔍 Profamilys de la oferta:', offer.profamilys || offer.profamily);
+      
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
         headers: {
@@ -423,7 +426,7 @@ function CompanyOffersContent() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          skills: offer.offerSkills,
+          offerId: offer.id,  // 🔥 ENVIAR offerId para que el backend cargue skills y profamilys
           filters: {
             minAffinity: 'medio' // Solo candidatos con afinidad media o superior
           }
