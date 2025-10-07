@@ -963,9 +963,12 @@ function CompanyOffersContent() {
                         </div>
 
                         <div className="bg-blue-50 p-3 rounded-lg mb-3">
-                          <p className="text-sm text-blue-800">
-                            {candidate.affinity?.explanation || 'Sin información de afinidad'}
-                          </p>
+                          <p 
+                            className="text-sm text-blue-800"
+                            dangerouslySetInnerHTML={{ 
+                              __html: candidate.affinity?.explanation || 'Sin información de afinidad' 
+                            }}
+                          />
                         </div>
 
                         <div className="flex gap-4 text-sm text-gray-600 mb-3">
@@ -1119,9 +1122,12 @@ function CompanyOffersContent() {
                         </div>
 
                         <div className="bg-purple-50 p-3 rounded-lg mb-3">
-                          <p className="text-sm text-purple-800">
-                            {student.affinity?.explanation || 'Sin información de afinidad'}
-                          </p>
+                          <p 
+                            className="text-sm text-purple-800"
+                            dangerouslySetInnerHTML={{ 
+                              __html: student.affinity?.explanation || 'Sin información de afinidad' 
+                            }}
+                          />
                         </div>
 
                         <div className="flex gap-4 text-sm text-gray-600">
