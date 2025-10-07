@@ -116,7 +116,8 @@ export interface Offer {
   updatedAt: string;
   profamily?: Profamily; // Legacy field for backward compatibility
   profamilys?: Profamily[]; // New field for multiple profamilies
-  companies?: Company;
+  company?: Company; // Company information
+  companies?: Company; // Legacy field
   Skills?: Array<{
     id: number;
     name: string;

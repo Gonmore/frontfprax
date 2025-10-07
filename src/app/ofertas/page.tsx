@@ -571,6 +571,23 @@ export default function OfertasPage() {
                             {offer.name}
                           </CardTitle>
                           <div className="text-base text-muted-foreground">
+                            {/* 🔥 MOSTRAR NOMBRE DE LA EMPRESA */}
+                            {offer.company?.name && (
+                              <div className="flex items-center text-blue-600 font-semibold mb-2">
+                                <Building className="h-4 w-4 mr-1" />
+                                {offer.company.name}
+                              </div>
+                            )}
+                            {/* 🔥 MOSTRAR CARRERAS PROFESIONALES */}
+                            {offer.profamilys && offer.profamilys.length > 0 && (
+                              <div className="flex items-start text-purple-600 mb-2">
+                                <Users className="h-4 w-4 mr-1 mt-0.5" />
+                                <div>
+                                  <span className="font-medium">Carreras: </span>
+                                  {offer.profamilys.map((pf: any) => pf.name).join(', ')}
+                                </div>
+                              </div>
+                            )}
                             {offer.sector && (
                               <div className="flex items-center text-gray-600 mb-1">
                                 <Building className="h-4 w-4 mr-1" />
