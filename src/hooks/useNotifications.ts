@@ -83,9 +83,15 @@ export const useNotifications = () => {
           }
           console.log('🔌 WebSocket: Construyendo desde NEXT_PUBLIC_API_URL:', wsBaseUrl);
         } else {
-          // Fallback para desarrollo local
-          wsBaseUrl = useSecure ? 'wss://localhost:5000' : 'ws://localhost:5000';
-          console.log('🔌 WebSocket: Usando fallback localhost:', wsBaseUrl);
+          // Fallback para desarrollo local - usar variable de entorno para WebSocket
+          const wsEnvUrl = process.env.NEXT_PUBLIC_WEBSOCKET_URL;
+          if (wsEnvUrl) {
+            wsBaseUrl = wsEnvUrl;
+          } else {
+            // Solo usar localhost como último recurso
+            wsBaseUrl = useSecure ? 'wss://localhost:5000' : 'ws://localhost:5000';
+          }
+          console.log('🔌 WebSocket: Usando fallback:', wsBaseUrl);
         }
 
         const wsUrl = `${wsBaseUrl}/ws/notifications?token=${encodeURIComponent(token)}`;
