@@ -191,7 +191,7 @@ function IntelligentSearchContent() {
       console.log('✅ ===== RESPUESTA DEL BACKEND =====');
       console.log('📊 Total estudiantes encontrados:', data.students?.length || 0);
       console.log('🔍 Estudiantes con detalles de afinidad:');
-      data.students?.forEach((student, index) => {
+      data.students?.forEach((student: Student, index: number) => {
         console.log(`   ${index + 1}. ${student.User.name} ${student.User.surname} - Afinidad: ${student.affinity.level} (score: ${student.affinity.score})`);
         console.log(`      Profamily: ${student.Profamily?.name || 'NINGUNO'}`);
         console.log(`      Explicación: ${student.affinity.explanation}`);
