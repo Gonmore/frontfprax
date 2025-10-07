@@ -14,6 +14,8 @@ interface TestResult {
 }
 
 export default function TestPage() {
+  console.log('🧪 COMPONENTE DE PRUEBA CARGADO - TestPage');
+  console.log('🧪 Timestamp:', Date.now());
   const [tests, setTests] = useState<TestResult[]>([])
   const [isRunning, setIsRunning] = useState(false)
 

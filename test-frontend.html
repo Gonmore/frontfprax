@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prueba Frontend Ausbildung</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 20px; border: 1px solid #ccc; border-radius: 8px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        pre { background: #f4f4f4; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Prueba Frontend Ausbildung</h1>
+
+    <div class="test-section">
+        <h2>1. Verificar Consola del Navegador</h2>
+        <p>Abre la consola del navegador (F12 → Console) y verifica si ves los logs que agregamos:</p>
+        <ul>
+            <li><code>🔥 ===== IntelligentSearchContent COMPONENT RENDERED =====</code></li>
+            <li><code>🔥 Current timestamp: [fecha]</code></li>
+            <li><code>🔥 Window location: [URL]</code></li>
+        </ul>
+        <p><strong>Si NO ves estos logs, el componente React no se está cargando.</strong></p>
+    </div>
+
+    <div class="test-section">
+        <h2>2. Probar Backend Directamente</h2>
+        <p>El backend funciona correctamente. Aquí están los resultados de la prueba:</p>
+        <div class="success">
+            <h3>✅ Backend Funcionando</h3>
+            <p><strong>Con filtro profamilyId=1:</strong></p>
+            <ul>
+                <li>Juan Pérez García: <strong>ALTO</strong> (65/100) - 50 profamily + 15 skills</li>
+                <li>Laura Sánchez Moreno: <strong>BAJO</strong> (25/100)</li>
+            </ul>
+            <p><strong>Sin filtro profamily:</strong></p>
+            <ul>
+                <li>Juan Pérez García: <strong>BAJO</strong> (15/100) - 0 profamily + 15 skills</li>
+                <li>Otros estudiantes: 0 puntos</li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>3. Pasos para Diagnosticar</h2>
+        <ol>
+            <li>Abre la página del buscador inteligente en tu navegador</li>
+            <li>Abre la consola del navegador (F12)</li>
+            <li>Selecciona una familia profesional en el dropdown</li>
+            <li>Verifica que aparezca: <code>🔥 ===== PROFAMILY FILTER CHANGED =====</code></li>
+            <li>Agrega una habilidad (ej: JavaScript)</li>
+            <li>Haz click en "Buscar Estudiantes"</li>
+            <li>Verifica que aparezca: <code>🔥 ===== BOTÓN BUSCAR CLICKED =====</code></li>
+            <li>Si no ves estos logs, hay un problema con el frontend</li>
+        </ol>
+    </div>
+
+    <div class="test-section">
+        <h2>4. Solución Temporal</h2>
+        <p>Si el frontend no funciona, puedes usar el backend directamente con esta petición:</p>
+        <pre>
+POST https://backfprax-production.up.railway.app/api/students/search-intelligent
+Headers:
+  Authorization: Bearer [tu-token]
+  Content-Type: application/json
+
+Body:
+{
+  "skills": {
+    "JavaScript": 3,
+    "React": 2
+  },
+  "filters": {
+    "profamilyId": "1"
+  }
+}
+        </pre>
+        <p>Esto debería devolver estudiantes con puntuación de profamily correcta.</p>
+    </div>
+
+    <script>
+        console.log('🧪 ===== PRUEBA HTML CARGADA =====');
+        console.log('Si ves este mensaje, JavaScript funciona en el navegador');
+    </script>
+</body>
+</html>

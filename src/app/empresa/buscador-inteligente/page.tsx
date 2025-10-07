@@ -6,11 +6,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Slider } from '@/components/ui/slider';
-import { Eye, Mail, Search, Plus, X, Brain, Star, Target, Car, GraduationCap, Briefcase, Lock, CreditCard, CheckCircle } from 'lucide-react';
+import { Eye, Search, Plus, X, Brain, Target, Car, GraduationCap, Briefcase, CreditCard } from 'lucide-react';
 import { useAuthStore } from '@/stores/auth';
 import { AuthGuard } from '@/components/auth-guard';
 
@@ -50,9 +48,11 @@ interface Student {
 }
 
 function IntelligentSearchContent() {
+  console.log('🚨 COMPONENTE CARGADO - BUSCADOR INTELIGENTE');
+  console.log('🚨 Timestamp:', Date.now());
+
   const [skills, setSkills] = useState<{[key: string]: number}>({});
   const [currentSkill, setCurrentSkill] = useState('');
-  const [currentValue, setCurrentValue] = useState(3);
   const [filters, setFilters] = useState({
     profamilyId: '',
     grade: '',
@@ -62,23 +62,12 @@ function IntelligentSearchContent() {
   const [results, setResults] = useState<Student[]>([]);
   const [loading, setLoading] = useState(false);
   const [showResults, setShowResults] = useState(false);
-  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
-  const [showCVModal, setShowCVModal] = useState(false);
-  const [showContactModal, setShowContactModal] = useState(false);
-  const [showTokenModal, setShowTokenModal] = useState(false);
-  const [userTokens, setUserTokens] = useState(0); // Cambiar a 0 inicialmente
+  const [userTokens, setUserTokens] = useState(0);
   const [loadingTokens, setLoadingTokens] = useState(true);
-  const [selectedStudentForAction, setSelectedStudentForAction] = useState<any>(null);
-  const [cvData, setCvData] = useState<any>(null);
-  const [contactForm, setContactForm] = useState({
-    subject: '',
-    message: ''
-  });
-  const [revealedCVs, setRevealedCVs] = useState<number[]>([]);
 
   const { token } = useAuthStore();
 
-  // Cargar balance de tokens real
+  // Cargar balance de tokens
   useEffect(() => {
     const fetchTokenBalance = async () => {
       try {
@@ -93,10 +82,9 @@ function IntelligentSearchContent() {
         if (response.ok) {
           const data = await response.json();
           setUserTokens(data.balance);
-          console.log('💰 Balance de tokens:', data.balance);
         }
       } catch (error) {
-        console.error('❌ Error cargando tokens:', error);
+        console.error('Error cargando tokens:', error);
       } finally {
         setLoadingTokens(false);
       }
@@ -107,40 +95,13 @@ function IntelligentSearchContent() {
     }
   }, [token]);
 
-  // REVEAL CVs
-  useEffect(() => {
-    const fetchRevealedCVs = async () => {
-      try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/revealed-cvs`, {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          }
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setRevealedCVs(data.revealedStudentIds);
-          console.log('✅ CVs revelados cargados:', data.revealedStudentIds);
-        }
-      } catch (error) {
-        console.error('❌ Error cargando CVs revelados:', error);
-      }
-    };
-
-    if (token) {
-      fetchRevealedCVs();
-    }
-  }, [token]);
-
   const addSkill = () => {
     if (currentSkill.trim() && !skills[currentSkill.trim()]) {
       setSkills(prev => ({
         ...prev,
-        [currentSkill.trim()]: currentValue
+        [currentSkill.trim()]: 3
       }));
       setCurrentSkill('');
-      setCurrentValue(3);
     }
   };
 
@@ -153,6 +114,10 @@ function IntelligentSearchContent() {
   };
 
   const searchStudents = async () => {
+    console.log('🔥 ===== searchStudents FUNCTION CALLED =====');
+    console.log('🔥 Skills:', skills);
+    console.log('🔥 Filters:', filters);
+
     if (Object.keys(skills).length === 0) {
       alert('Agrega al menos una habilidad para buscar');
       return;
@@ -160,7 +125,6 @@ function IntelligentSearchContent() {
 
     setLoading(true);
     try {
-      // 🔥 LOGS PARA DEBUG: Ver qué se envía al backend
       const requestBody = {
         skills,
         filters: Object.fromEntries(
@@ -168,11 +132,7 @@ function IntelligentSearchContent() {
         )
       };
 
-      console.log('🚀 ===== ENVIANDO PETICIÓN AL BACKEND =====');
-      console.log('🔍 Skills enviadas:', skills);
-      console.log('🔍 Filtros enviados:', requestBody.filters);
-      console.log('🔍 Filtros originales:', filters);
-      console.log('🔍 Request body completo:', JSON.stringify(requestBody, null, 2));
+      console.log('🚀 Enviando petición:', JSON.stringify(requestBody, null, 2));
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
@@ -188,131 +148,15 @@ function IntelligentSearchContent() {
       }
 
       const data = await response.json();
-      console.log('✅ ===== RESPUESTA DEL BACKEND =====');
-      console.log('📊 Total estudiantes encontrados:', data.students?.length || 0);
-      console.log('🔍 Estudiantes con detalles de afinidad:');
-      data.students?.forEach((student: Student, index: number) => {
-        console.log(`   ${index + 1}. ${student.User.name} ${student.User.surname} - Afinidad: ${student.affinity.level} (score: ${student.affinity.score})`);
-        console.log(`      Profamily: ${student.Profamily?.name || 'NINGUNO'}`);
-        console.log(`      Explicación: ${student.affinity.explanation}`);
-      });
+      console.log('✅ Respuesta del backend:', data);
 
-      setResults(data.students);
+      setResults(data.students || []);
       setShowResults(true);
     } catch (error) {
       console.error('❌ Error en búsqueda:', error);
       alert('Error al realizar la búsqueda');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleRevealStudent = async (student: Student) => {
-    try {
-      console.log('🔓 Revelar estudiante:', student.id);
-      
-      const isAlreadyRevealed = revealedCVs.includes(student.id);
-      
-      if (isAlreadyRevealed) {
-        console.log('✅ Estudiante ya revelado - Acceso gratuito');
-      }
-      
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${student.id}/view-cv`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fromIntelligentSearch: true
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.code === 'INSUFFICIENT_TOKENS') {
-          alert(`❌ Tokens insuficientes.\nNecesitas ${errorData.required} tokens para revelar este estudiante.\n\n¿Quieres recargar tokens?`);
-          setShowTokenModal(true); // 🔥 MOSTRAR MODAL DE RECARGA
-          return;
-        }
-        throw new Error('Error al revelar el estudiante');
-      }
-
-      const cvData = await response.json();
-      console.log('✅ Estudiante revelado:', cvData);
-      
-      // 🔥 ACTUALIZAR INMEDIATAMENTE EL STATE Y TOKEN BALANCE
-      if (!isAlreadyRevealed && !cvData.wasAlreadyRevealed) {
-        setRevealedCVs(prev => [...prev, student.id]);
-        // Actualizar tokens inmediatamente solo si se cobraron
-        if (cvData.tokensUsed > 0) {
-          setUserTokens(prev => prev - cvData.tokensUsed);
-        }
-      }
-      
-      // Mostrar modal elegante
-      setSelectedStudentForAction(student);
-      setCvData(cvData);
-      setShowCVModal(true);
-      
-    } catch (error) {
-      console.error('❌ Error revelando estudiante:', error);
-      alert('Error al revelar el estudiante');
-    }
-  };
-
-  const handleContact = (student: Student) => {
-    setSelectedStudentForAction(student);
-    setContactForm({
-      subject: `Interés en tu perfil profesional`,
-      message: `Estimado/a ${student.User.name},\n\nHemos encontrado tu perfil a través de nuestro sistema de búsqueda inteligente y nos interesa mucho conocerte.\n\nTu nivel de afinidad con nuestras ofertas es: ${student.affinity?.level?.toUpperCase()}\n\n¿Te gustaría conocer más sobre las oportunidades que tenemos disponibles?\n\nSaludos cordiales.`
-    });
-    setShowContactModal(true);
-  };
-
-  const handleSendContact = async () => {
-    if (!selectedStudentForAction) return;
-
-    try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${selectedStudentForAction.id}/contact`, {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          fromIntelligentSearch: false, // 🔥 GRATIS porque ya fue revelado
-          subject: contactForm.subject,
-          message: contactForm.message
-        })
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        if (errorData.code === 'INSUFFICIENT_TOKENS') {
-          alert(`❌ Tokens insuficientes.\nNecesitas ${errorData.required} tokens para contactar.`);
-          return;
-        }
-        throw new Error('Error al contactar el estudiante');
-      }
-
-      const result = await response.json();
-      console.log('✅ Contacto registrado:', result);
-
-      // Abrir cliente de email
-      const emailBody = encodeURIComponent(contactForm.message);
-      const emailSubject = encodeURIComponent(contactForm.subject);
-      const emailUrl = `mailto:${selectedStudentForAction.User.email}?subject=${emailSubject}&body=${emailBody}`;
-      
-      window.open(emailUrl);
-      
-      // Cerrar modal
-      setShowContactModal(false);
-      setContactForm({ subject: '', message: '' });
-      
-    } catch (error) {
-      console.error('❌ Error contactando estudiante:', error);
-      alert('Error al contactar el estudiante');
     }
   };
 
@@ -323,15 +167,6 @@ function IntelligentSearchContent() {
       case 'medio': return 'bg-yellow-100 text-yellow-800 border-yellow-300';
       case 'bajo': return 'bg-gray-100 text-gray-800 border-gray-300';
       default: return 'bg-gray-100 text-gray-800 border-gray-300';
-    }
-  };
-
-  const getAffinityIcon = (level: string) => {
-    switch (level) {
-      case 'muy alto': return <Star className="w-4 h-4 text-green-600" />;
-      case 'alto': return <Target className="w-4 h-4 text-blue-600" />;
-      case 'medio': return <Brain className="w-4 h-4 text-yellow-600" />;
-      default: return <Brain className="w-4 h-4 text-gray-600" />;
     }
   };
 
@@ -346,12 +181,6 @@ function IntelligentSearchContent() {
         <p className="text-gray-600">
           Encuentra los mejores candidatos <strong>que aún NO han aplicado</strong> a tus ofertas
         </p>
-        <div className="bg-blue-50 p-3 rounded-lg mt-3">
-          <p className="text-sm text-blue-800">
-            💡 <strong>Nota:</strong> Este buscador solo muestra estudiantes que NO son candidatos actuales. 
-            Para ver candidatos que ya aplicaron, ve a la sección "Candidatos" (gratis).
-          </p>
-        </div>
         <div className="flex items-center gap-2 mt-2">
           <CreditCard className="w-4 h-4 text-green-600" />
           <span className="text-sm text-green-600 font-medium">
@@ -381,32 +210,11 @@ function IntelligentSearchContent() {
                   onKeyPress={(e) => e.key === 'Enter' && addSkill()}
                   className="flex-1"
                 />
-                <div className="flex items-center gap-2 min-w-[100px]">
-                  <span className="text-sm">Valor:</span>
-                  <span className="font-bold text-blue-600">{currentValue}</span>
-                </div>
+                <Button onClick={addSkill} disabled={!currentSkill.trim()}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Agregar
+                </Button>
               </div>
-              
-              <div className="px-2">
-                <Slider
-                  value={[currentValue]}
-                  onValueChange={(value) => setCurrentValue(value[0])}
-                  min={1}
-                  max={3}
-                  step={1}
-                  className="w-full"
-                />
-                <div className="flex justify-between text-xs text-gray-500 mt-1">
-                  <span>Básico (1)</span>
-                  <span>Importante (2)</span>
-                  <span>Crítico (3)</span>
-                </div>
-              </div>
-
-              <Button onClick={addSkill} disabled={!currentSkill.trim()} className="w-full">
-                <Plus className="w-4 h-4 mr-2" />
-                Agregar Habilidad
-              </Button>
 
               {/* Lista de habilidades */}
               {Object.keys(skills).length > 0 && (
@@ -414,12 +222,28 @@ function IntelligentSearchContent() {
                   <h4 className="font-medium">Habilidades agregadas:</h4>
                   <div className="space-y-1">
                     {Object.entries(skills).map(([skill, value]) => (
-                      <div key={skill} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                        <span className="font-medium">{skill}</span>
-                        <div className="flex items-center gap-2">
-                          <Badge variant="outline" className="text-blue-600">
-                            Valor: {value}
-                          </Badge>
+                      <div key={skill} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                        <span className="font-medium min-w-0 flex-1 mr-4">{skill}</span>
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="flex items-center gap-2">
+                            <span className="text-sm text-gray-600 whitespace-nowrap">Importancia:</span>
+                            <Badge variant="outline" className="text-blue-600 min-w-[3rem] justify-center">
+                              {value}
+                            </Badge>
+                          </div>
+                          <Slider
+                            value={[value]}
+                            onValueChange={(newValue) => {
+                              setSkills(prev => ({
+                                ...prev,
+                                [skill]: newValue[0]
+                              }));
+                            }}
+                            max={5}
+                            min={1}
+                            step={1}
+                            className="w-20"
+                          />
                           <Button
                             variant="ghost"
                             size="sm"
@@ -444,7 +268,10 @@ function IntelligentSearchContent() {
             <CardContent className="space-y-4">
               <div>
                 <Label>Familia Profesional</Label>
-                <Select value={filters.profamilyId} onValueChange={(value) => setFilters(prev => ({...prev, profamilyId: value}))}>
+                <Select value={filters.profamilyId} onValueChange={(value) => {
+                  console.log('🔥 Profamily changed:', value);
+                  setFilters(prev => ({...prev, profamilyId: value}));
+                }}>
                   <SelectTrigger>
                     <SelectValue placeholder="Todas las familias" />
                   </SelectTrigger>
@@ -503,8 +330,13 @@ function IntelligentSearchContent() {
                 </Select>
               </div>
 
-              <Button 
-                onClick={searchStudents} 
+              <Button
+                onClick={() => {
+                  console.log('🔥 Botón buscar clicked');
+                  console.log('🔥 Filters:', filters);
+                  console.log('🔥 Skills:', skills);
+                  searchStudents();
+                }}
                 disabled={loading || Object.keys(skills).length === 0}
                 className="w-full bg-blue-600 hover:bg-blue-700"
               >
@@ -555,7 +387,6 @@ function IntelligentSearchContent() {
                           <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-300">
                             Estudiante Nuevo
                           </Badge>
-                          {getAffinityIcon(student.affinity.level)}
                           <Badge className={getAffinityColor(student.affinity.level)}>
                             Afinidad: {student.affinity.level.toUpperCase()}
                           </Badge>
@@ -586,45 +417,28 @@ function IntelligentSearchContent() {
                         <p className="text-sm text-blue-800 mb-2">{student.affinity.explanation}</p>
                         <div className="flex flex-wrap gap-2">
                           {student.affinity.matchingSkills.map((match, index) => (
-                            <Badge 
-                              key={index} 
-                              variant="outline" 
+                            <Badge
+                              key={index}
+                              variant="outline"
                               className={match.isPremium ? 'bg-green-50 text-green-700 border-green-300' : 'bg-blue-50 text-blue-700 border-blue-300'}
                             >
-                              {match.skill} ({match.companyValue}→{match.studentValue}) 
+                              {match.skill} ({match.companyValue}→{match.studentValue})
                               {match.isPremium && ' ⭐'}
                             </Badge>
                           ))}
                         </div>
                       </div>
-
-                      {/* Habilidades del estudiante */}
-                      {student.tag && (
-                        <div className="mb-4">
-                          <h4 className="font-medium text-gray-700 mb-2">Habilidades:</h4>
-                          <div className="flex flex-wrap gap-2">
-                            {student.tag.split(',').map((tag: string, index: number) => (
-                              <Badge key={index} variant="outline">{tag.trim()}</Badge>
-                            ))}
-                          </div>
-                        </div>
-                      )}
                     </div>
 
                     {/* Botones de acción */}
                     <div className="flex flex-col gap-2">
-                      <Button 
-                        size="sm" 
+                      <Button
+                        size="sm"
                         variant="outline"
-                        onClick={() => handleRevealStudent(student)}
-                        className={revealedCVs.includes(student.id) ? 
-                          'bg-green-50 border-green-300 text-green-700 cursor-default' : 
-                          'bg-purple-50 border-purple-300 text-purple-700 hover:bg-purple-100'
-                        }
-                        disabled={revealedCVs.includes(student.id)}
+                        className="bg-purple-50 border-purple-300 text-purple-700"
                       >
                         <Eye className="w-4 h-4 mr-1" />
-                        {revealedCVs.includes(student.id) ? 'CV Revelado ✓' : 'Revelar Perfil (2 tokens)'}
+                        Revelar Perfil (2 tokens)
                       </Button>
                     </div>
                   </div>
@@ -646,224 +460,6 @@ function IntelligentSearchContent() {
           )}
         </div>
       )}
-
-      {/* Modal CV Elegante */}
-      <Dialog open={showCVModal} onOpenChange={setShowCVModal}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Eye className="w-5 h-5" />
-              CV de {selectedStudentForAction?.User?.name} {selectedStudentForAction?.User?.surname}
-              <Badge className={cvData?.wasAlreadyRevealed ? 'bg-blue-100 text-blue-800 ml-2' : 'bg-purple-100 text-purple-800 ml-2'}>
-                {cvData?.wasAlreadyRevealed ? 'Ya Revelado' : 'Con Tokens'}
-              </Badge>
-            </DialogTitle>
-          </DialogHeader>
-          
-          {selectedStudentForAction && cvData && (
-            <div className="space-y-6">
-              {/* Información personal */}
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-lg mb-3">Información Personal</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Nombre completo</p>
-                    <p className="font-medium">{selectedStudentForAction.User.name} {selectedStudentForAction.User.surname}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Email</p>
-                    <p className="font-medium">{selectedStudentForAction.User.email}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Teléfono</p>
-                    <p className="font-medium">{selectedStudentForAction.User.phone || 'No especificado'}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Vehículo propio</p>
-                    <p className="font-medium">{selectedStudentForAction.car ? 'Sí' : 'No'}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Formación académica */}
-              <div className="bg-blue-50 p-4 rounded-lg">
-                <h3 className="font-semibold text-lg mb-3">Formación Académica</h3>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600">Grado</p>
-                    <p className="font-medium">{cvData.student.grade}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600">Curso</p>
-                    <p className="font-medium">{cvData.student.course}</p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Habilidades */}
-              {cvData.student.skills && cvData.student.skills.length > 0 && (
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Habilidades y Tecnologías</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {cvData.student.skills.map((skill: any, index: number) => (
-                      <Badge key={index} variant="secondary">
-                        {skill.name} ({skill.proficiencyLevel})
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Afinidad */}
-              {selectedStudentForAction.affinity && (
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-lg mb-3">Afinidad con tu búsqueda</h3>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Badge className="bg-purple-100 text-purple-800">
-                      {selectedStudentForAction.affinity.level.toUpperCase()}
-                    </Badge>
-                    <span className="text-sm text-gray-600">
-                      Score: {selectedStudentForAction.affinity.score}/10
-                    </span>
-                  </div>
-                  <p className="text-sm text-purple-700">
-                    {selectedStudentForAction.affinity.explanation}
-                  </p>
-                </div>
-              )}
-
-              {/* Información de acceso */}
-              <div className={`p-4 rounded-lg border ${cvData?.wasAlreadyRevealed ? 'bg-blue-50 border-blue-200' : 'bg-purple-50 border-purple-200'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <h4 className={`font-semibold ${cvData?.wasAlreadyRevealed ? 'text-blue-800' : 'text-purple-800'}`}>
-                    {cvData?.wasAlreadyRevealed ? 'CV Previamente Revelado' : 'Candidato Inteligente - 2 Tokens'}
-                  </h4>
-                </div>
-                <p className="text-sm text-gray-700">
-                  {cvData?.wasAlreadyRevealed 
-                    ? 'Ya revelaste este CV anteriormente con tokens, ahora puedes acceder gratuitamente.'
-                    : 'Este candidato fue encontrado por nuestro algoritmo de IA y tiene alta afinidad con tu búsqueda.'
-                  }
-                </p>
-              </div>
-
-              {/* Acciones */}
-              <div className="flex gap-2 pt-4 border-t">
-                <Button 
-                  onClick={() => {
-                    setShowCVModal(false);
-                    // Abrir modal de contacto
-                    setContactForm({
-                      subject: `Interés en tu perfil profesional`,
-                      message: `Estimado/a ${selectedStudentForAction?.User?.name},\n\nHemos revisado tu perfil y nos interesa mucho conocerte.\n\nTu nivel de afinidad con nuestras búsquedas es: ${selectedStudentForAction?.affinity?.level?.toUpperCase()}\n\n¿Te gustaría conocer más sobre las oportunidades que tenemos disponibles?\n\nSaludos cordiales.`
-                    });
-                    setShowContactModal(true);
-                  }}
-                  className="bg-blue-600 hover:bg-blue-700"
-                >
-                  <Mail className="w-4 h-4 mr-2" />
-                  Contactar Estudiante
-                </Button>
-                <Button 
-                  variant="outline" 
-                  onClick={() => setShowCVModal(false)}
-                >
-                  Cerrar
-                </Button>
-              </div>
-            </div>
-          )}
-        </DialogContent>
-      </Dialog>
-
-      {/* Modal de Contacto Elegante */}
-      <Dialog open={showContactModal} onOpenChange={setShowContactModal}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Mail className="w-5 h-5" />
-              Contactar a {selectedStudentForAction?.User?.name} {selectedStudentForAction?.User?.surname}
-              <Badge className="bg-green-100 text-green-800 ml-2">
-                Sin Costo Adicional
-              </Badge>
-            </DialogTitle>
-          </DialogHeader>
-          
-          <div className="space-y-4">
-            {/* Info del estudiante */}
-            <div className="bg-gray-50 p-4 rounded-lg">
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-semibold">
-                  {selectedStudentForAction?.User?.name?.charAt(0)}{selectedStudentForAction?.User?.surname?.charAt(0)}
-                </div>
-                <div>
-                  <h4 className="font-semibold">{selectedStudentForAction?.User?.name} {selectedStudentForAction?.User?.surname}</h4>
-                  <p className="text-sm text-gray-600">{selectedStudentForAction?.User?.email}</p>
-                  <p className="text-sm text-gray-600">{selectedStudentForAction?.grade} - {selectedStudentForAction?.course}</p>
-                  {selectedStudentForAction?.affinity && (
-                    <Badge className="bg-purple-100 text-purple-800 mt-1">
-                      Afinidad: {selectedStudentForAction.affinity.level}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Formulario de contacto */}
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Asunto del mensaje
-                </label>
-                <input
-                  type="text"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={contactForm.subject}
-                  onChange={(e) => setContactForm(prev => ({ ...prev, subject: e.target.value }))}
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Mensaje
-                </label>
-                <textarea
-                  rows={8}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={contactForm.message}
-                  onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
-                />
-              </div>
-            </div>
-
-            {/* Información de costo */}
-            <div className="p-3 rounded-lg bg-green-50 text-green-800">
-              <div className="flex items-center gap-2">
-                <CheckCircle className="w-4 h-4" />
-                <span className="text-sm font-medium">Contacto incluido sin costo adicional - Estudiante ya revelado</span>
-              </div>
-            </div>
-
-            {/* Botones */}
-            <div className="flex gap-2 pt-4">
-              <Button 
-                onClick={handleSendContact}
-                className="bg-green-600 hover:bg-green-700"
-                disabled={!contactForm.subject.trim() || !contactForm.message.trim()}
-              >
-                <Mail className="w-4 h-4 mr-2" />
-                Enviar Contacto
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowContactModal(false)}
-              >
-                Cancelar
-              </Button>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
