@@ -159,7 +159,7 @@ function CandidateSearchContent() {
         setError(null);
         console.log('🔍 Cargando aplicaciones agrupadas por estudiante...');
         
-        const response = await fetch('http://localhost:5000/api/applications/company', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/company`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -237,7 +237,7 @@ function CandidateSearchContent() {
     try {
       console.log('📄 Ver CV gratuito para candidato:', student.id);
       
-      const response = await fetch(`http://localhost:5000/api/students/${student.id}/view-cv`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${student.id}/view-cv`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -285,7 +285,7 @@ function CandidateSearchContent() {
     try {
       console.log('📞 Contactar candidato gratuito:', selectedStudent.id);
       
-      const response = await fetch(`http://localhost:5000/api/students/${selectedStudent.id}/contact`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${selectedStudent.id}/contact`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -370,7 +370,7 @@ function CandidateSearchContent() {
       
       // Procesar cada aplicación
       for (const applicationId of acceptForm.applicationIds) {
-        const response = await fetch(`http://localhost:5000/api/applications/${applicationId}/status`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -412,7 +412,7 @@ function CandidateSearchContent() {
       // 🔥 GENERAR AUTOMÁTICAMENTE ENLACE DE GOOGLE MEET PARA ENTREVISTAS ONLINE
       if (interviewForm.type === 'online') {
         try {
-          const meetResponse = await fetch('http://localhost:5000/api/meetings/generate-link', {
+          const meetResponse = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/meetings/generate-link`, {
             method: 'POST',
             headers: {
               'Authorization': `Bearer ${token}`,
@@ -469,7 +469,7 @@ function CandidateSearchContent() {
       
       // Procesar cada aplicación
       for (const applicationId of interviewForm.applicationIds) {
-        const response = await fetch(`http://localhost:5000/api/applications/${applicationId}/interview`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/interview`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -523,7 +523,7 @@ function CandidateSearchContent() {
       
       // Procesar cada aplicación
       for (const applicationId of rejectForm.applicationIds) {
-        const response = await fetch(`http://localhost:5000/api/applications/${applicationId}/status`, {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
           method: 'PUT',
           headers: {
             'Authorization': `Bearer ${token}`,
