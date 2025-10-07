@@ -418,6 +418,7 @@ function CompanyOffersContent() {
       // 🔥 CORRECCIÓN: Enviar offerId para que el backend cargue profamilys y calcule correctamente la afinidad
       console.log('🚀 Buscando candidatos para oferta:', offer.id, offer.name);
       console.log('🔍 Profamilys de la oferta:', offer.profamilys || offer.profamily);
+      console.log('🔍 Skills de la oferta:', offer.skills);
       
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
@@ -428,17 +429,27 @@ function CompanyOffersContent() {
         body: JSON.stringify({
           offerId: offer.id,  // 🔥 ENVIAR offerId para que el backend cargue skills y profamilys
           filters: {
-            minAffinity: 'medio' // Solo candidatos con afinidad media o superior
+            // 🔥 REMOVER FILTRO TEMPORALMENTE PARA VER TODOS LOS CANDIDATOS
+            // minAffinity: 'medio'
           }
         })
       });
 
       if (response.ok) {
         const data = await response.json();
+        console.log('✅ RESPUESTA COMPLETA DEL BACKEND:', data);
+        console.log('📊 Total de estudiantes recibidos:', data.students?.length || 0);
+        console.log('🎯 Primer estudiante (ejemplo):', data.students?.[0]);
+        console.log('🔍 Niveles de afinidad encontrados:', 
+          data.students?.map((s: any) => s.affinity?.level).filter((v: any, i: number, a: any[]) => a.indexOf(v) === i)
+        );
+        
         setBetterCandidates(data.students);
         console.log('🔍 Mejores candidatos encontrados:', data.students.length);
       } else {
         console.error('❌ Error buscando candidatos:', response.status);
+        const errorData = await response.json().catch(() => null);
+        console.error('❌ Detalles del error:', errorData);
       }
     } catch (error) {
       console.error('❌ Error buscando mejores candidatos:', error);
