@@ -83,7 +83,7 @@ function IntelligentSearchContent() {
     const fetchTokenBalance = async () => {
       try {
         setLoadingTokens(true);
-        const response = await fetch('http://localhost:5000/api/students/tokens/balance', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/tokens/balance`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -111,7 +111,7 @@ function IntelligentSearchContent() {
   useEffect(() => {
     const fetchRevealedCVs = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/students/revealed-cvs', {
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/revealed-cvs`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -160,7 +160,7 @@ function IntelligentSearchContent() {
 
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/students/search-intelligent', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -200,7 +200,7 @@ function IntelligentSearchContent() {
         console.log('✅ Estudiante ya revelado - Acceso gratuito');
       }
       
-      const response = await fetch(`http://localhost:5000/api/students/${student.id}/view-cv`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${student.id}/view-cv`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -257,7 +257,7 @@ function IntelligentSearchContent() {
     if (!selectedStudentForAction) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/students/${selectedStudentForAction.id}/contact`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${selectedStudentForAction.id}/contact`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

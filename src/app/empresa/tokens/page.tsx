@@ -79,13 +79,13 @@ function TokenManagementContent() {
       
       // Cargar balance y historial en paralelo
       const [balanceResponse, historyResponse] = await Promise.all([
-        fetch('http://localhost:5000/api/students/tokens/balance', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/tokens/balance`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
           }
         }),
-        fetch('http://localhost:5000/api/tokens/usage-history', {
+        fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/tokens/usage-history`, {
           headers: {
             'Authorization': `Bearer ${token}`,
             'Content-Type': 'application/json',
@@ -114,7 +114,7 @@ function TokenManagementContent() {
     try {
       setProcessingPurchase(true);
       
-      const response = await fetch('http://localhost:5000/api/tokens/recharge', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/tokens/recharge`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

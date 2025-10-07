@@ -416,7 +416,7 @@ function CompanyOffersContent() {
 
     try {
       // Buscar mejores candidatos usando el algoritmo
-      const response = await fetch('http://localhost:5000/api/students/search-intelligent', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -449,7 +449,7 @@ function CompanyOffersContent() {
     try {
       console.log('📄 Ver CV gratuito para candidato:', student.id);
       
-      const response = await fetch(`http://localhost:5000/api/students/${student.id}/view-cv`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${student.id}/view-cv`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -551,7 +551,7 @@ function CompanyOffersContent() {
         info('CV ya revelado previamente - Acceso gratuito');
       }
       
-      const response = await fetch(`http://localhost:5000/api/students/${studentId}/view-cv`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${studentId}/view-cv`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -617,7 +617,7 @@ function CompanyOffersContent() {
     setLoadingStates(prev => ({ ...prev, contacting: true }));
 
     try {
-      const response = await fetch(`http://localhost:5000/api/students/${cvData.student.id}/contact`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/${cvData.student.id}/contact`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -705,7 +705,7 @@ function CompanyOffersContent() {
     try {
       console.log('✅ Confirmando aceptación para aplicación:', selectedStudentForAction.id);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedStudentForAction.id}/status`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedStudentForAction.id}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -743,7 +743,7 @@ function CompanyOffersContent() {
     try {
       console.log('📅 Confirmando entrevista para aplicación:', selectedStudentForAction.id);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedStudentForAction.id}/interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedStudentForAction.id}/interview`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -808,7 +808,7 @@ function CompanyOffersContent() {
     try {
       console.log('❌ Confirmando rechazo para aplicación:', selectedStudentForAction.id);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedStudentForAction.id}/status`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedStudentForAction.id}/status`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
