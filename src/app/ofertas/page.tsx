@@ -387,7 +387,7 @@ export default function OfertasPage() {
 
     setLoadingInterviewAction(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/reject-interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/reject-interview`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

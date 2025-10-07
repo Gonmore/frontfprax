@@ -131,7 +131,7 @@ function CompanyApplicationsContent() {
         throw new Error('No hay token de autenticación');
       }
 
-      const response = await fetch('http://localhost:5000/api/applications/company', {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/company`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -171,7 +171,7 @@ function CompanyApplicationsContent() {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${applicationId}/status`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -216,7 +216,7 @@ function CompanyApplicationsContent() {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/interview`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ function CompanyApplicationsContent() {
     try {
       setLoading(true);
       
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/status`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/status`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

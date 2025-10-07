@@ -103,7 +103,7 @@ export default function AplicacionesPage() {
 
       console.log('🔍 Fetching applications for user:', user.id);
       
-      const response = await fetch(`http://localhost:5000/api/applications/user`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/user`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -152,7 +152,7 @@ export default function AplicacionesPage() {
     
     try {
       // 🔥 USAR applicationId EN LA URL PARA COINCIDIR CON LA RUTA
-      const url = `http://localhost:5000/api/applications/${applicationId}`;
+      const url = `${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}`;
       console.log('🌐 DELETE URL:', url);
 
       const response = await fetch(url, {
@@ -202,7 +202,7 @@ export default function AplicacionesPage() {
 
     setLoadingInterviewAction(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/confirm-interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/confirm-interview`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -244,7 +244,7 @@ export default function AplicacionesPage() {
 
     setLoadingInterviewAction(true);
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/${selectedApplication.id}/reject-interview`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${selectedApplication.id}/reject-interview`, {
         method: 'PUT',
         headers: {
           'Authorization': `Bearer ${token}`,

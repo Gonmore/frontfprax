@@ -42,21 +42,21 @@ export default function TestPage() {
 
     // Test 1: Verificar conexión con backend
     await runTest('Conexión Backend', async () => {
-      const response = await fetch('http://localhost:5000/')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/`)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       return { status: response.status, statusText: response.statusText }
     })
 
     // Test 2: Verificar rutas de autenticación
     await runTest('Rutas Auth', async () => {
-      const response = await fetch('http://localhost:5000/login')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/login`)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       return { status: response.status }
     })
 
     // Test 3: Verificar endpoint de ofertas
     await runTest('Endpoint Ofertas', async () => {
-      const response = await fetch('http://localhost:5000/api/offers')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/offers`)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
       // El endpoint puede devolver un mensaje en lugar de array cuando no hay ofertas
@@ -68,7 +68,7 @@ export default function TestPage() {
 
     // Test 4: Verificar endpoint de empresas (requiere autenticación)
     await runTest('Endpoint Empresas', async () => {
-      const response = await fetch('http://localhost:5000/api/company')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/company`)
       // Este endpoint requiere autenticación, 401 es esperado
       if (response.status === 401) {
         return { status: 401, message: 'Requiere autenticación (esperado)' }
@@ -80,7 +80,7 @@ export default function TestPage() {
 
     // Test 5: Verificar endpoint de centros
     await runTest('Endpoint Centros', async () => {
-      const response = await fetch('http://localhost:5000/api/scenter')
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/scenter`)
       if (!response.ok) throw new Error(`HTTP ${response.status}`)
       const data = await response.json()
       return { count: Array.isArray(data) ? data.length : 0 }
@@ -92,7 +92,7 @@ export default function TestPage() {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 segundos timeout
         
-        const response = await fetch('http://localhost:5000/auth/google', { 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/google`, { 
           method: 'GET',
           signal: controller.signal,
           redirect: 'manual' // No seguir redirects
@@ -121,7 +121,7 @@ export default function TestPage() {
         const controller = new AbortController()
         const timeoutId = setTimeout(() => controller.abort(), 3000) // 3 segundos timeout
         
-        const response = await fetch('http://localhost:5000/auth/facebook', { 
+        const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/auth/facebook`, { 
           method: 'GET',
           signal: controller.signal,
           redirect: 'manual' // No seguir redirects
@@ -190,7 +190,7 @@ export default function TestPage() {
                 <div>
                   <h3 className="text-lg font-medium">Ejecutar Tests</h3>
                   <p className="text-sm text-gray-600">
-                    Esto verificará la conectividad con el backend en http://localhost:5000
+                    Esto verificará la conectividad con el backend en {process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}
                   </p>
                 </div>
                 <Button 

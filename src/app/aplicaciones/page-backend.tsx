@@ -69,7 +69,7 @@ export default function AplicacionesPage() {
 
       console.log('🔍 Fetching applications for user:', user.id);
       
-      const response = await fetch(`http://localhost:5000/api/applications/user`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/user`, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -100,7 +100,7 @@ export default function AplicacionesPage() {
     if (!confirm('¿Estás seguro de que quieres retirar esta aplicación?')) return;
     
     try {
-      const response = await fetch(`http://localhost:5000/api/applications/${applicationId}`, {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/applications/${applicationId}`, {
         method: 'DELETE',
         headers: {
           'Authorization': `Bearer ${token}`,
