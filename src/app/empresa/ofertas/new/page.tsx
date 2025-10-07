@@ -59,9 +59,30 @@ export default function EmpresaOfertasNewPage() {
 	const [companyCity, setCompanyCity] = useState<string>('');
 	const [companyCountry, setCompanyCountry] = useState<string>('');
 	const [cities, setCities] = useState<Array<{ id: string; name: string }>>([]);
+	const [countries, setCountries] = useState<Array<{ code: string; name: string }>>([]);
+	const [selectedCountry, setSelectedCountry] = useState<string>('');
+	const [loadingCities, setLoadingCities] = useState(false);
 
 	const handleChange = (field: keyof CreateOfferData, value: any) => {
 		setNewOffer(prev => ({ ...prev, [field]: value }));
+	};
+
+	// 🔥 NUEVO: Manejar cambio de país para cargar ciudades
+	const handleCountryChange = (countryCode: string) => {
+		setSelectedCountry(countryCode);
+		setNewOffer(prev => ({ ...prev, location: '' })); // Resetear ciudad
+		
+		if (countryCode) {
+			setLoadingCities(true);
+			fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/geography/countries/${countryCode}/cities?limit=100`)
+				.then(r => r.json())
+				.then(data => {
+					if (data.success) setCities(data.data || []);
+				})
+				.finally(() => setLoadingCities(false));
+		} else {
+			setCities([]);
+		}
 	};
 
 				useEffect(() => {
@@ -73,18 +94,35 @@ export default function EmpresaOfertasNewPage() {
 						.then(data => {
 							if (data.success) setSkills(data.data);
 						});
+					
+					// 🔥 MEJORADO: Cargar países disponibles
+					fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/geography/countries`)
+						.then(r => r.json())
+						.then(data => {
+							if (data.success) setCountries(data.data || []);
+						});
+					
 					if (user?.role === 'company' && user?.companyId) {
 						companyService.getById(user.companyId).then(res => {
-							setCompanyCity(res.data.city || '');
-							setNewOffer(prev => ({ ...prev, location: res.data.city || '' }));
+							const city = res.data.city || '';
+							const country = user.countryCode || '';
+							
+							setCompanyCity(city);
+							setCompanyCountry(country);
+							setSelectedCountry(country);
+							setNewOffer(prev => ({ ...prev, location: city }));
+							
+							// 🔥 Si hay país, cargar ciudades automáticamente
+							if (country) {
+								setLoadingCities(true);
+								fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/geography/countries/${country}/cities?limit=100`)
+									.then(r => r.json())
+									.then(data => {
+										if (data.success) setCities(data.data || []);
+									})
+									.finally(() => setLoadingCities(false));
+							}
 						});
-						if (user.countryCode) {
-							fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/geography/countries/${user.countryCode}/cities?limit=50`)
-								.then(r => r.json())
-								.then(data => {
-									if (data.success) setCities(data.data);
-								});
-						}
 					}
 
 					// Detectar ID de edición por URL (ya no usamos props)
@@ -476,21 +514,53 @@ export default function EmpresaOfertasNewPage() {
 								</div>
 
 								{newOffer.mode === 'presencial' && (
-									<div>
-										<Label htmlFor="location" className="text-sm font-semibold text-gray-700 mb-2 block">
-											Ciudad
-										</Label>
-										<Select value={newOffer.location} onValueChange={v => handleChange('location', v)}>
-											<SelectTrigger id="location">
-												<SelectValue placeholder="Selecciona una ciudad" />
-											</SelectTrigger>
-											<SelectContent>
-												{cities.map(city => (
-													<SelectItem key={city.id} value={city.name}>{city.name}</SelectItem>
-												))}
-											</SelectContent>
-										</Select>
-									</div>
+									<>
+										{/* 🔥 NUEVO: Selector de país si no hay país configurado */}
+										{!companyCountry && (
+											<div>
+												<Label htmlFor="country" className="text-sm font-semibold text-gray-700 mb-2 block">
+													País
+												</Label>
+												<Select value={selectedCountry} onValueChange={handleCountryChange}>
+													<SelectTrigger id="country">
+														<SelectValue placeholder="Selecciona un país" />
+													</SelectTrigger>
+													<SelectContent>
+														{countries.map(country => (
+															<SelectItem key={country.code} value={country.code}>
+																{country.name}
+															</SelectItem>
+														))}
+													</SelectContent>
+												</Select>
+											</div>
+										)}
+										
+										{/* Selector de ciudad */}
+										<div>
+											<Label htmlFor="location" className="text-sm font-semibold text-gray-700 mb-2 block">
+												Ciudad {companyCountry && `(${countries.find(c => c.code === companyCountry)?.name || companyCountry})`}
+											</Label>
+											<Select 
+												value={newOffer.location} 
+												onValueChange={v => handleChange('location', v)}
+												disabled={loadingCities || (!companyCountry && !selectedCountry)}
+											>
+												<SelectTrigger id="location">
+													<SelectValue placeholder={
+														loadingCities ? "Cargando ciudades..." :
+														!companyCountry && !selectedCountry ? "Primero selecciona un país" :
+														"Selecciona una ciudad"
+													} />
+												</SelectTrigger>
+												<SelectContent>
+													{cities.map(city => (
+														<SelectItem key={city.id} value={city.name}>{city.name}</SelectItem>
+													))}
+												</SelectContent>
+											</Select>
+										</div>
+									</>
 								)}
 
 								<div>
