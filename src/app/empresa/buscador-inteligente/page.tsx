@@ -48,8 +48,9 @@ interface Student {
 }
 
 function IntelligentSearchContent() {
-  console.log('🚨 COMPONENTE CARGADO - BUSCADOR INTELIGENTE');
-  console.log('🚨 Timestamp:', Date.now());
+  console.log('🚨🚨🚨 COMPONENTE CARGADO - BUSCADOR INTELIGENTE 🚨🚨🚨');
+  console.log('🚨🚨🚨 Timestamp:', Date.now());
+  console.log('🚨🚨🚨 Window location:', window.location.href);
 
   const [skills, setSkills] = useState<{[key: string]: number}>({});
   const [currentSkill, setCurrentSkill] = useState('');
@@ -114,9 +115,10 @@ function IntelligentSearchContent() {
   };
 
   const searchStudents = async () => {
-    console.log('🔥 ===== searchStudents FUNCTION CALLED =====');
-    console.log('🔥 Skills:', skills);
-    console.log('🔥 Filters:', filters);
+    console.log('🔥🔥🔥 ===== searchStudents FUNCTION CALLED ===== 🔥🔥🔥');
+    console.log('🔥🔥🔥 Skills:', skills);
+    console.log('🔥🔥🔥 Filters:', filters);
+    console.log('🔥🔥🔥 Current timestamp:', Date.now());
 
     if (Object.keys(skills).length === 0) {
       alert('Agrega al menos una habilidad para buscar');
@@ -332,9 +334,10 @@ function IntelligentSearchContent() {
 
               <Button
                 onClick={() => {
-                  console.log('🔥 Botón buscar clicked');
-                  console.log('🔥 Filters:', filters);
-                  console.log('🔥 Skills:', skills);
+                  console.log('🔥🔥🔥 BOTÓN BUSCAR CLICKED 🔥🔥🔥');
+                  console.log('🔥🔥🔥 Filters at click:', filters);
+                  console.log('🔥🔥🔥 Skills at click:', skills);
+                  console.log('🔥🔥🔥 Timestamp at click:', Date.now());
                   searchStudents();
                 }}
                 disabled={loading || Object.keys(skills).length === 0}
