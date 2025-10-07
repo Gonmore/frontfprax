@@ -444,8 +444,12 @@ function CompanyOffersContent() {
           data.students?.map((s: any) => s.affinity?.level).filter((v: any, i: number, a: any[]) => a.indexOf(v) === i)
         );
         
-        setBetterCandidates(data.students);
-        console.log('🔍 Mejores candidatos encontrados:', data.students.length);
+        // 🔥 LIMITAR A LOS 3 MEJORES CANDIDATOS
+        const top3Candidates = data.students?.slice(0, 3) || [];
+        console.log(`🏆 Mostrando los ${top3Candidates.length} mejores candidatos`);
+        
+        setBetterCandidates(top3Candidates);
+        console.log('🔍 Mejores candidatos encontrados:', top3Candidates.length);
       } else {
         console.error('❌ Error buscando candidatos:', response.status);
         const errorData = await response.json().catch(() => null);
