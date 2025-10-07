@@ -160,18 +160,27 @@ function IntelligentSearchContent() {
 
     setLoading(true);
     try {
+      // 🔥 LOGS PARA DEBUG: Ver qué se envía al backend
+      const requestBody = {
+        skills,
+        filters: Object.fromEntries(
+          Object.entries(filters).filter(([_, value]) => value !== '')
+        )
+      };
+
+      console.log('🚀 ===== ENVIANDO PETICIÓN AL BACKEND =====');
+      console.log('🔍 Skills enviadas:', skills);
+      console.log('🔍 Filtros enviados:', requestBody.filters);
+      console.log('🔍 Filtros originales:', filters);
+      console.log('🔍 Request body completo:', JSON.stringify(requestBody, null, 2));
+
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/students/search-intelligent`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          skills,
-          filters: Object.fromEntries(
-            Object.entries(filters).filter(([_, value]) => value !== '')
-          )
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) {
@@ -179,9 +188,17 @@ function IntelligentSearchContent() {
       }
 
       const data = await response.json();
+      console.log('✅ ===== RESPUESTA DEL BACKEND =====');
+      console.log('📊 Total estudiantes encontrados:', data.students?.length || 0);
+      console.log('🔍 Estudiantes con detalles de afinidad:');
+      data.students?.forEach((student, index) => {
+        console.log(`   ${index + 1}. ${student.User.name} ${student.User.surname} - Afinidad: ${student.affinity.level} (score: ${student.affinity.score})`);
+        console.log(`      Profamily: ${student.Profamily?.name || 'NINGUNO'}`);
+        console.log(`      Explicación: ${student.affinity.explanation}`);
+      });
+
       setResults(data.students);
       setShowResults(true);
-      console.log('🔍 Resultados búsqueda inteligente:', data);
     } catch (error) {
       console.error('❌ Error en búsqueda:', error);
       alert('Error al realizar la búsqueda');
